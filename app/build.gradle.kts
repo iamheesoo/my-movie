@@ -38,6 +38,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -56,5 +58,7 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.compose.material.icons)
 
 }
