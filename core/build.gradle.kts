@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.heesoo.core"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24
@@ -43,4 +43,11 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.retrofit.okhttp3)
+    implementation(libs.retrofit.logging.interceptor)
+    implementation(libs.serialization.core)
+    implementation(libs.serialization.json)
 }

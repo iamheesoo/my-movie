@@ -61,4 +61,11 @@ dependencies {
 
     implementation(libs.compose.material.icons)
 
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.retrofit.okhttp3)
+    implementation(libs.retrofit.logging.interceptor)
+    implementation(libs.serialization.core)
+    implementation(libs.serialization.json)
+
 }
