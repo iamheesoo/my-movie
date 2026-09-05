@@ -4,6 +4,7 @@ import android.util.Log
 import com.heesoo.core.network.HeaderInterceptor
 import com.heesoo.my_movie.BuildConfig
 import com.heesoo.my_movie.data.api.DiscoverApi
+import com.heesoo.my_movie.data.api.MovieApi
 import com.heesoo.my_movie.data.constants.NetworkingConstants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -57,6 +58,12 @@ object ApiModule {
     @Provides
     fun provideDiscoverApi(retrofit: Retrofit): DiscoverApi {
         return retrofit.create(DiscoverApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMovieApi(retrofit: Retrofit): MovieApi {
+        return retrofit.create(MovieApi::class.java)
     }
 
     @Singleton
