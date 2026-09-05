@@ -29,6 +29,9 @@ class DetailViewModel @Inject constructor(
     override fun handleEvent(event: DetailContract.Event) {
         when (event) {
             is DetailContract.Event.EntranceScreen -> fetchMovieDetail()
+            is DetailContract.Event.ClickBackButton -> {
+                popBackStack()
+            }
         }
     }
 
@@ -47,5 +50,9 @@ class DetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun popBackStack() {
+        sendEffect { DetailContract.Effect.PopBackStack }
     }
 }

@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.heesoo.my_movie.domain.model.Movie
+import com.heesoo.my_movie.presentaion.DetailListener
 import com.heesoo.my_movie.presentaion.HomeListener
 import com.heesoo.my_movie.presentaion.detail.DetailScreen
 import com.heesoo.my_movie.presentaion.home.HomePage
@@ -57,7 +58,14 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
             )
         }
         composable<Route.Detail> {
-            DetailScreen(viewModel = hiltViewModel())
+            DetailScreen(
+                viewModel = hiltViewModel(),
+                listener = object : DetailListener {
+                    override fun popBackStack() {
+                        navController.popBackStack()
+                    }
+                }
+            )
         }
     }
 }

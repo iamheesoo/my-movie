@@ -22,7 +22,7 @@ class HomeViewModel @Inject constructor(
 
     override fun handleEvent(event: HomeContract.Event) {
         when(event) {
-            is HomeContract.Event.OnClickMovie -> {
+            is HomeContract.Event.ClickMovie -> {
                 goToDetail(movie = event.movie)
             }
         }

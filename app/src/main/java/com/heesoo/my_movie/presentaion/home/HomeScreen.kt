@@ -43,7 +43,7 @@ fun HomePage(viewModel: HomeViewModel, listener: HomeListener) {
                 modifier = Modifier.fillMaxSize(),
                 pagerState = pagerState,
                 movieLazyItems = movieLazyItems,
-                onClick = { viewModel.sendEvent(HomeContract.Event.OnClickMovie(movie = it)) }
+                onClick = { viewModel.sendEvent(HomeContract.Event.ClickMovie(movie = it)) }
             )
 
             when (movieLazyItems.loadState.refresh) {

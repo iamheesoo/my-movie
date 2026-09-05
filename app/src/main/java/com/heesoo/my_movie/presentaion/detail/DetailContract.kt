@@ -14,7 +14,10 @@ class DetailContract {
 
     sealed interface Event : UiEvent {
         data object EntranceScreen : Event
+        data object ClickBackButton : Event
     }
 
-    sealed interface Effect : UiEffect
+    sealed interface Effect : UiEffect {
+        data object PopBackStack : Effect
+    }
 }
