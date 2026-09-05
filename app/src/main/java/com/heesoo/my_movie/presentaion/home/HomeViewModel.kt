@@ -20,5 +20,15 @@ class HomeViewModel @Inject constructor(
 
     override fun createState(): HomeContract.State = HomeContract.State
 
-    override fun handleEvent(event: HomeContract.Event) = Unit
+    override fun handleEvent(event: HomeContract.Event) {
+        when(event) {
+            is HomeContract.Event.OnClickMovie -> {
+                goToDetail(movie = event.movie)
+            }
+        }
+    }
+
+    private fun goToDetail(movie: Movie) {
+        sendEffect { HomeContract.Effect.GoToDetail(movie = movie) }
+    }
 }

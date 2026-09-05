@@ -2,6 +2,7 @@ package com.heesoo.my_movie.presentaion.home.composable
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -35,9 +36,10 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun MovieHorizontalPager(
+    modifier: Modifier = Modifier,
     pagerState: PagerState,
     movieLazyItems: LazyPagingItems<Movie>,
-    modifier: Modifier = Modifier
+    onClick: ((Movie) -> Unit)? = null,
 ) {
     Box(modifier = modifier) {
         Crossfade(
@@ -84,6 +86,7 @@ fun MovieHorizontalPager(
                     LoadingAsyncImage(
                         data = movie.posterUrl,
                         modifier = Modifier.fillMaxSize()
+                            .clickable{ onClick?.invoke(movie) }
                     )
                 } else {
                     Icon(

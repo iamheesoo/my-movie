@@ -17,12 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.heesoo.my_movie.home.presentation.composable.TopAppBar
+import com.heesoo.my_movie.presentaion.HomeListener
 import com.heesoo.my_movie.presentaion.home.composable.MovieHorizontalPager
 import com.heesoo.my_movie.presentaion.home.composable.RetryContent
 
 @Composable
-fun HomePage(viewModel: HomeViewModel) {
-    Effect(viewModel = viewModel)
+fun HomePage(viewModel: HomeViewModel, listener: HomeListener) {
+    Effect(viewModel = viewModel, listener = listener)
 
     val movieLazyItems = viewModel.moviePagingFlow.collectAsLazyPagingItems()
     val pagerState = rememberPagerState() { movieLazyItems.itemCount }
@@ -39,9 +40,10 @@ fun HomePage(viewModel: HomeViewModel) {
                 .fillMaxSize()
         ) {
             MovieHorizontalPager(
+                modifier = Modifier.fillMaxSize(),
                 pagerState = pagerState,
                 movieLazyItems = movieLazyItems,
-                modifier = Modifier.fillMaxSize()
+                onClick = { viewModel.sendEvent(HomeContract.Event.OnClickMovie(movie = it)) }
             )
 
             when (movieLazyItems.loadState.refresh) {
@@ -88,13 +90,15 @@ fun HomePage(viewModel: HomeViewModel) {
 }
 
 @Composable
-private fun Effect(viewModel: HomeViewModel) {
+private fun Effect(viewModel: HomeViewModel, listener: HomeListener) {
     val context = LocalContext.current
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { effect ->
-//            when(effect) {
-//
-//            }
+            when(effect) {
+                is HomeContract.Effect.GoToDetail -> {
+                    listener.goToDetail(effect.movie)
+                }
+            }
         }
     }
 }
