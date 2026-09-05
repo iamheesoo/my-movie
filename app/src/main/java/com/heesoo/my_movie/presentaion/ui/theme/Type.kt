@@ -1,4 +1,4 @@
-package com.heesoo.my_movie.ui.theme
+package com.heesoo.my_movie.presentaion.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

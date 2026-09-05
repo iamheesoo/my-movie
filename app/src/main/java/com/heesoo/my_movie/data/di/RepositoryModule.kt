@@ -1,0 +1,17 @@
+package com.heesoo.my_movie.data.di
+
+import com.heesoo.my_movie.data.repository.DiscoverRepositoryImpl
+import com.heesoo.my_movie.domain.repository.DiscoverRepository
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindDiscoverRepository(impl: DiscoverRepositoryImpl): DiscoverRepository
+}
