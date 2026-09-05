@@ -83,4 +83,7 @@ dependencies {
     implementation(libs.serialization.core)
     implementation(libs.serialization.json)
 
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
+
 }

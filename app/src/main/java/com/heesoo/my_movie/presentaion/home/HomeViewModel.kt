@@ -1,55 +1,24 @@
 package com.heesoo.my_movie.presentaion.home
 
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.heesoo.core.base.BaseMviViewModel
-import com.heesoo.core.extensions.actionWithLoading
-import com.heesoo.core.helper.StateHelper
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.domain.usecase.GetDiscoverUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getDiscoverUseCase: GetDiscoverUseCase
-) : BaseMviViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>(), StateHelper {
-    override fun createState(): HomeContract.State {
-        return HomeContract.State(
-            isLoading = false,
-            movieList = emptyList()
-        )
-    }
+    getDiscoverUseCase: GetDiscoverUseCase
+) : BaseMviViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>() {
 
-    override fun handleEvent(event: HomeContract.Event) {
-        when(event) {
-            is HomeContract.Event.EntranceScreen -> {
-                handleEntrance()
-            }
-        }
-    }
+    val moviePagingFlow: Flow<PagingData<Movie>> = getDiscoverUseCase()
+        .cachedIn(viewModelScope)
 
-    private fun handleEntrance() {
-        viewModelScope.launch { getMovieList()}
-    }
+    override fun createState(): HomeContract.State = HomeContract.State
 
-    private suspend fun getMovieList() {
-        actionWithLoading {
-            getDiscoverUseCase()
-                .catch { it.printStackTrace() }
-                .collectLatest { list ->
-                    updateMovieList(list)
-                }
-        }
-    }
-
-    override fun updateIsLoading(isVisible: Boolean) {
-        setState { this.copy(isLoading = isVisible) }
-    }
-
-    private fun updateMovieList(list: List<Movie>) {
-        setState { this.copy(movieList = list) }
-    }
+    override fun handleEvent(event: HomeContract.Event) = Unit
 }

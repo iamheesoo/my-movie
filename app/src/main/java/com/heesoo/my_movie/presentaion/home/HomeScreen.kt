@@ -4,22 +4,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.heesoo.my_movie.home.presentation.composable.TopAppBar
 import com.heesoo.my_movie.presentaion.home.composable.MovieHorizontalPager
+import com.heesoo.my_movie.presentaion.home.composable.RetryContent
 
 @Composable
 fun HomePage(viewModel: HomeViewModel) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val movieList = state.movieList
-    val pagerState = rememberPagerState() { movieList.size }
+    Effect(viewModel = viewModel)
+
+    val movieLazyItems = viewModel.moviePagingFlow.collectAsLazyPagingItems()
+    val pagerState = rememberPagerState() { movieLazyItems.itemCount }
 
     Scaffold(
         modifier = Modifier
@@ -27,11 +33,56 @@ fun HomePage(viewModel: HomeViewModel) {
             .fillMaxSize(),
         topBar = { TopAppBar(title = "홈") }
     ) { innerPadding ->
-        LaunchedEffect(Unit) {
-            viewModel.sendEvent(HomeContract.Event.EntranceScreen)
-        }
-        Box(modifier = Modifier.padding(innerPadding)) {
-            MovieHorizontalPager(pagerState = pagerState, movieList = movieList)
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            MovieHorizontalPager(
+                pagerState = pagerState,
+                movieLazyItems = movieLazyItems,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            when (movieLazyItems.loadState.refresh) {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                is LoadState.Error -> {
+                    RetryContent(
+                        message = "영화 목록을 불러오지 못했습니다.",
+                        onRetry = { movieLazyItems.retry() },
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                is LoadState.NotLoading -> {}
+            }
+
+            when (movieLazyItems.loadState.append) {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 24.dp)
+                            .size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+
+                is LoadState.Error -> {
+                    RetryContent(
+                        message = "다음 페이지를 불러오지 못했습니다.",
+                        onRetry = { movieLazyItems.retry() },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 24.dp)
+                    )
+                }
+
+                is LoadState.NotLoading -> {}
+            }
         }
     }
 }

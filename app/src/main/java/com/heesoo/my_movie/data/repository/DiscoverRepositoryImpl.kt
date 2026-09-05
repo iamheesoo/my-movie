@@ -1,35 +1,38 @@
 package com.heesoo.my_movie.data.repository
 
-import com.heesoo.core.IoDispatcher
-import com.heesoo.my_movie.data.mapper.DiscoverMapper
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.heesoo.my_movie.data.paging.DiscoverPagingSource
 import com.heesoo.my_movie.data.remote.DiscoverRemoteDataSource
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.domain.repository.DiscoverRepository
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DiscoverRepositoryImpl @Inject constructor(
-    private val discoverRemoteDataSource: DiscoverRemoteDataSource,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val discoverRemoteDataSource: DiscoverRemoteDataSource
 ) : DiscoverRepository {
-    override suspend fun getDiscoverList(
-        page: Int,
+    override fun getDiscoverPagingFlow(
         language: String,
         sortBy: String,
         includeAdult: Boolean,
         includeVideo: Boolean
-    ): Flow<List<Movie>> =
-        withContext(ioDispatcher) {
-            discoverRemoteDataSource.getDiscover(
-                page = page,
-                language = language,
-                sortBy = sortBy,
-                includeAdult = includeAdult,
-                includeVideo = includeVideo
-            )
-                .map { DiscoverMapper.responseToData(it) }
-        }
+    ): Flow<PagingData<Movie>> =
+        Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+            pagingSourceFactory = {
+                DiscoverPagingSource(
+                    discoverRemoteDataSource = discoverRemoteDataSource,
+                    language = language,
+                    sortBy = sortBy,
+                    includeAdult = includeAdult,
+                    includeVideo = includeVideo
+                )
+            }
+        ).flow
+
+    companion object {
+        private const val PAGE_SIZE = 20
+    }
 }

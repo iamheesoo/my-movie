@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,19 +25,23 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.heesoo.my_movie.domain.model.Movie
+import kotlinx.coroutines.flow.flowOf
 import com.heesoo.my_movie.presentaion.ui.composable.image.LoadingAsyncImage
 import kotlin.math.absoluteValue
 
 @Composable
 fun MovieHorizontalPager(
     pagerState: PagerState,
-    movieList: List<Movie>,
+    movieLazyItems: LazyPagingItems<Movie>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
         Crossfade(
-            targetState = movieList.getOrNull(pagerState.currentPage)?.backdropUrl,
+            targetState = movieLazyItems.itemSnapshotList.getOrNull(pagerState.currentPage)?.backdropUrl,
             animationSpec = tween(durationMillis = 400),
             modifier = Modifier.fillMaxSize()
         ) { backdropUrl ->
@@ -55,7 +60,7 @@ fun MovieHorizontalPager(
             pageSpacing = 8.dp,
             beyondViewportPageCount = 1
         ) { currentPage ->
-            val movie = movieList.getOrNull(currentPage)
+            val movie = movieLazyItems[currentPage]
             val pageOffset = pagerState.getOffsetDistanceInPages(currentPage)
             val focusFraction = 1f - pageOffset.absoluteValue.coerceIn(0f, 1f)
             Box(
@@ -95,8 +100,10 @@ fun MovieHorizontalPager(
 @Composable
 @Preview
 private fun MovieHorizontalPagerPreview() {
+    val movieLazyItems = remember { flowOf(PagingData.empty<Movie>()) }
+        .collectAsLazyPagingItems()
     MovieHorizontalPager(
-        pagerState = rememberPagerState() { 1 },
-        movieList = listOf()
+        pagerState = rememberPagerState() { movieLazyItems.itemCount },
+        movieLazyItems = movieLazyItems
     )
 }
