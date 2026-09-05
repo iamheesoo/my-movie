@@ -2,6 +2,7 @@ package com.heesoo.my_movie.data.di
 
 import android.util.Log
 import com.heesoo.core.network.HeaderInterceptor
+import com.heesoo.my_movie.BuildConfig
 import com.heesoo.my_movie.data.api.DiscoverApi
 import com.heesoo.my_movie.data.constants.NetworkingConstants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -57,4 +58,15 @@ object ApiModule {
     fun provideDiscoverApi(retrofit: Retrofit): DiscoverApi {
         return retrofit.create(DiscoverApi::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideInterceptor(): HeaderInterceptor {
+        return HeaderInterceptor(
+            hashMapOf(
+                NetworkingConstants.KEY_HEADER to "${NetworkingConstants.KEY_HEADER_PREFIX} ${BuildConfig.TMDB_API_KEY}"
+            )
+        )
+    }
+
 }
