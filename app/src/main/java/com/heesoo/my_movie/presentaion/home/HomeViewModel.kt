@@ -25,10 +25,18 @@ class HomeViewModel @Inject constructor(
             is HomeContract.Event.ClickMovie -> {
                 goToDetail(movie = event.movie)
             }
+
+            is HomeContract.Event.ClickSearch -> {
+                goToSearch()
+            }
         }
     }
 
     private fun goToDetail(movie: Movie) {
         sendEffect { HomeContract.Effect.GoToDetail(movie = movie) }
+    }
+
+    private fun goToSearch() {
+        sendEffect { HomeContract.Effect.GoToSearch }
     }
 }

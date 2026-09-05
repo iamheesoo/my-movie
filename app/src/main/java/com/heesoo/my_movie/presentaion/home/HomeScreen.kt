@@ -6,12 +6,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -32,7 +37,19 @@ fun HomePage(viewModel: HomeViewModel, listener: HomeListener) {
         modifier = Modifier
             .safeDrawingPadding()
             .fillMaxSize(),
-        topBar = { TopAppBar(title = "홈") }
+        topBar = {
+            TopAppBar(title = "홈", rightContent = {
+                IconButton(
+                    onClick = {viewModel.sendEvent(HomeContract.Event.ClickSearch)}
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = null,
+                        tint = Color.Black
+                    )
+                }
+            })
+        }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -94,9 +111,13 @@ private fun Effect(viewModel: HomeViewModel, listener: HomeListener) {
     val context = LocalContext.current
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { effect ->
-            when(effect) {
+            when (effect) {
                 is HomeContract.Effect.GoToDetail -> {
                     listener.goToDetail(effect.movie)
+                }
+
+                is HomeContract.Effect.GoToSearch -> {
+                    listener.goToSearch()
                 }
             }
         }

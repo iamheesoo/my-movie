@@ -18,6 +18,7 @@ import com.heesoo.my_movie.presentaion.HomeListener
 import com.heesoo.my_movie.presentaion.detail.DetailScreen
 import com.heesoo.my_movie.presentaion.home.HomePage
 import com.heesoo.my_movie.presentaion.navigation.Route
+import com.heesoo.my_movie.presentaion.search.SearchScreen
 import com.heesoo.my_movie.presentaion.ui.theme.MymovieTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -54,6 +55,10 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
                     override fun goToDetail(movie: Movie) {
                         navController.navigate(Route.Detail(movieId = movie.id))
                     }
+
+                    override fun goToSearch() {
+                        navController.navigate(Route.Search)
+                    }
                 }
             )
         }
@@ -66,6 +71,9 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
                     }
                 }
             )
+        }
+        composable<Route.Search> {
+            SearchScreen(viewModel = hiltViewModel())
         }
     }
 }
