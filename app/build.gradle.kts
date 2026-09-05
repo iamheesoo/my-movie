@@ -74,6 +74,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.compose.material.icons)
+    implementation(libs.coil.compose)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.kotlinx.serialization)
