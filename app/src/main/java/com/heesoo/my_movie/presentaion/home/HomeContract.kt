@@ -9,7 +9,7 @@ class HomeContract {
     data object State : UiState
 
     sealed interface Event : UiEvent {
-        data class OnClickMovie(
+        data class ClickMovie(
             val movie: Movie
         ): Event
     }
