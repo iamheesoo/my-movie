@@ -1,5 +1,7 @@
 package com.heesoo.my_movie.presentaion.home.composable
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -33,10 +35,22 @@ fun MovieHorizontalPager(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
+        Crossfade(
+            targetState = movieList.getOrNull(pagerState.currentPage)?.backdropUrl,
+            animationSpec = tween(durationMillis = 400),
+            modifier = Modifier.fillMaxSize()
+        ) { backdropUrl ->
+            if (backdropUrl != null) {
+                LoadingAsyncImage(
+                    data = backdropUrl,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
-                .align(Alignment.BottomCenter),
+            modifier = Modifier
+                .fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 64.dp),
             pageSpacing = 8.dp,
             beyondViewportPageCount = 1
