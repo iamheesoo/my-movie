@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.presentaion.HomeListener
 import com.heesoo.my_movie.presentaion.detail.DetailScreen
@@ -57,9 +56,8 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
                 }
             )
         }
-        composable<Route.Detail> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.Detail>()
-            DetailScreen(movieId = route.movieId)
+        composable<Route.Detail> {
+            DetailScreen(viewModel = hiltViewModel())
         }
     }
 }

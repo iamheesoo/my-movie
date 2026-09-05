@@ -1,6 +1,7 @@
 package com.heesoo.my_movie.domain.usecase
 
 import androidx.paging.PagingData
+import com.heesoo.my_movie.domain.constants.AppConstants
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.domain.repository.DiscoverRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +13,7 @@ class GetDiscoverUseCase @Inject constructor(private val discoverRepository: Dis
         isIncludeVideo: Boolean = false
     ): Flow<PagingData<Movie>> {
         return discoverRepository.getDiscoverPagingFlow(
-            language = LANGUAGE_KOREAN,
+            language = AppConstants.LANGUAGE_KOREAN,
             sortBy = POPULARITY_DESC,
             includeAdult = isIncludeAdult,
             includeVideo = isIncludeVideo
@@ -20,7 +21,6 @@ class GetDiscoverUseCase @Inject constructor(private val discoverRepository: Dis
     }
 
     companion object {
-        private const val LANGUAGE_KOREAN = "ko-kr"
         private const val POPULARITY_DESC = "popularity.desc"
     }
 }
