@@ -35,7 +35,6 @@ fun HomePage(viewModel: HomeViewModel, listener: HomeListener) {
 
     Scaffold(
         modifier = Modifier
-            .safeDrawingPadding()
             .fillMaxSize(),
         topBar = {
             TopAppBar(title = "홈", rightContent = {
