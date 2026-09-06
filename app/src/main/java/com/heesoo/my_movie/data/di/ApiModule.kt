@@ -4,6 +4,7 @@ import android.util.Log
 import com.heesoo.core.network.HeaderInterceptor
 import com.heesoo.my_movie.BuildConfig
 import com.heesoo.my_movie.data.api.DiscoverApi
+import com.heesoo.my_movie.data.api.GenreApi
 import com.heesoo.my_movie.data.api.MovieApi
 import com.heesoo.my_movie.data.api.SearchApi
 import com.heesoo.my_movie.data.constants.NetworkingConstants
@@ -74,6 +75,12 @@ object ApiModule {
     @Provides
     fun provideSearchApi(retrofit: Retrofit): SearchApi{
         return retrofit.create(SearchApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideGenreApi(retrofit: Retrofit): GenreApi {
+        return retrofit.create(GenreApi::class.java)
     }
 
     @Singleton

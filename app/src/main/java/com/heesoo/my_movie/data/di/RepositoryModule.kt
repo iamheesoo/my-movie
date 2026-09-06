@@ -2,10 +2,12 @@ package com.heesoo.my_movie.data.di
 
 import com.heesoo.my_movie.data.repository.DiscoverRepositoryImpl
 import com.heesoo.my_movie.data.repository.FavoriteRepositoryImpl
+import com.heesoo.my_movie.data.repository.GenreRepositoryImpl
 import com.heesoo.my_movie.data.repository.MovieRepositoryImpl
 import com.heesoo.my_movie.data.repository.SearchRepositoryImpl
 import com.heesoo.my_movie.domain.repository.DiscoverRepository
 import com.heesoo.my_movie.domain.repository.FavoriteRepository
+import com.heesoo.my_movie.domain.repository.GenreRepository
 import com.heesoo.my_movie.domain.repository.MovieRepository
 import com.heesoo.my_movie.domain.repository.SearchRepository
 import dagger.Binds
@@ -32,4 +34,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFavoriteRepository(impl: FavoriteRepositoryImpl): FavoriteRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGenreRepository(impl: GenreRepositoryImpl): GenreRepository
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.heesoo.my_movie.presentaion.SearchListener
+import com.heesoo.my_movie.presentaion.ui.composable.movie.GenreChipsRow
 import com.heesoo.my_movie.presentaion.home.composable.RetryContent
 import com.heesoo.my_movie.presentaion.ui.composable.movie.MovieGridItem
 import com.heesoo.my_movie.presentaion.ui.composable.textfield.SearchTextField
@@ -55,6 +55,15 @@ fun SearchScreen(viewModel: SearchViewModel, listener: SearchListener) {
                 onClickDelete = { viewModel.sendEvent(SearchContract.Event.ClickDelete) }
             )
         }
+
+        GenreChipsRow(
+            genreList = state.genreList,
+            selectedGenreId = state.selectedGenreId,
+            onClickGenre = { viewModel.sendEvent(SearchContract.Event.ClickGenre(genre = it)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        )
 
         Box(modifier = Modifier.fillMaxSize()) {
             if (state.textFieldValue.text.isNotBlank()) {

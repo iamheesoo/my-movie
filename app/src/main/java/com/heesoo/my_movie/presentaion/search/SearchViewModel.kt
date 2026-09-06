@@ -4,12 +4,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.map
 import com.heesoo.core.base.BaseMviViewModel
+import com.heesoo.my_movie.domain.model.Genre
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.domain.usecase.AddFavoriteUseCase
 import com.heesoo.my_movie.domain.usecase.DeleteFavoriteUseCase
 import com.heesoo.my_movie.domain.usecase.GetFavoriteIdSetUseCase
+import com.heesoo.my_movie.domain.usecase.GetGenreListUseCase
 import com.heesoo.my_movie.domain.usecase.GetSearchListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -27,10 +30,16 @@ class SearchViewModel @Inject constructor(
     private val getSearchListUseCase: GetSearchListUseCase,
     private val getFavoriteIdSetUseCase: GetFavoriteIdSetUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    private val getGenreListUseCase: GetGenreListUseCase
 ) : BaseMviViewModel<SearchContract.State, SearchContract.Event, SearchContract.Effect>() {
 
+    init {
+        loadGenreList()
+    }
+
     private val queryFlow = MutableStateFlow("")
+    private val selectedGenreIdFlow = MutableStateFlow(ALL_GENRE_ID)
 
     val searchPagingFlow: Flow<PagingData<Movie>> = queryFlow
         .debounce(DEBOUNCE_MILLIS)
@@ -42,9 +51,19 @@ class SearchViewModel @Inject constructor(
         .combine(getFavoriteIdSetUseCase()) { pagingData, favoriteIdSet ->
             pagingData.map { movie -> movie.copy(isFavorite = movie.id in favoriteIdSet) }
         }
+        .combine(selectedGenreIdFlow) { pagingData, selectedGenreId ->
+            if (selectedGenreId == ALL_GENRE_ID) {
+                pagingData
+            } else {
+                pagingData.filter { movie -> selectedGenreId in movie.genreIdList }
+            }
+        }
 
-    override fun createState(): SearchContract.State =
-        SearchContract.State(textFieldValue = TextFieldValue(""))
+    override fun createState(): SearchContract.State = SearchContract.State(
+        textFieldValue = TextFieldValue(""),
+        genreList = emptyList(),
+        selectedGenreId = ALL_GENRE_ID,
+    )
 
     override fun handleEvent(event: SearchContract.Event) {
         when (event) {
@@ -61,7 +80,11 @@ class SearchViewModel @Inject constructor(
             }
 
             is SearchContract.Event.ClickFavorite -> {
-                toggleFavorite(movie = event.movie)
+                handleFavorite(movie = event.movie)
+            }
+
+            is SearchContract.Event.ClickGenre -> {
+                handleGenreFilter(genre = event.genre)
             }
 
             is SearchContract.Event.ClickDelete -> {
@@ -83,19 +106,14 @@ class SearchViewModel @Inject constructor(
         queryFlow.value = query
     }
 
-    private fun clearTextFieldValue() {
-        updateTextFieldValue(value = TextFieldValue(""))
+    private fun loadGenreList() {
+        viewModelScope.launch {
+            val genreList = listOf(ALL_GENRE) + getGenreListUseCase()
+            updateGenreList(genreList)
+        }
     }
 
-    private fun updateTextFieldValue(value: TextFieldValue) {
-        setState { copy(textFieldValue = value) }
-    }
-
-    private fun goToDetail(movie: Movie) {
-        sendEffect { SearchContract.Effect.GoToDetail(movie = movie) }
-    }
-
-    private fun toggleFavorite(movie: Movie) {
+    private fun handleFavorite(movie: Movie) {
         viewModelScope.launch {
             if (movie.isFavorite) {
                 deleteFavoriteUseCase(movieId = movie.id)
@@ -105,11 +123,38 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun handleGenreFilter(genre: Genre) {
+        selectedGenreIdFlow.value = genre.id
+        updateSelectedGenreId(genre.id)
+    }
+
+    private fun goToDetail(movie: Movie) {
+        sendEffect { SearchContract.Effect.GoToDetail(movie = movie) }
+    }
+
     private fun popBackStack() {
         sendEffect { SearchContract.Effect.PopBackStack }
     }
 
+    private fun clearTextFieldValue() {
+        updateTextFieldValue(value = TextFieldValue(""))
+    }
+
+    private fun updateGenreList(list: List<Genre>) {
+        setState { copy(genreList = list) }
+    }
+
+    private fun updateTextFieldValue(value: TextFieldValue) {
+        setState { copy(textFieldValue = value) }
+    }
+
+    private fun updateSelectedGenreId(id: Int) {
+        setState { copy(selectedGenreId = id) }
+    }
+
     companion object {
         private const val DEBOUNCE_MILLIS = 300L
+        private const val ALL_GENRE_ID = -1
+        private val ALL_GENRE = Genre(id = ALL_GENRE_ID, name = "전체")
     }
 }

@@ -2,6 +2,8 @@ package com.heesoo.my_movie.data.di
 
 import com.heesoo.my_movie.data.remote.DiscoverRemoteDataSource
 import com.heesoo.my_movie.data.remote.DiscoverRemoteDataSourceImpl
+import com.heesoo.my_movie.data.remote.GenreRemoteDataSource
+import com.heesoo.my_movie.data.remote.GenreRemoteDataSourceImpl
 import com.heesoo.my_movie.data.remote.MovieRemoteDataSource
 import com.heesoo.my_movie.data.remote.MovieRemoteDataSourceImpl
 import com.heesoo.my_movie.data.remote.SearchRemoteDataSource
@@ -26,4 +28,8 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindSearchRemoteDataSource(impl: SearchRemoteDataSourceImpl): SearchRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindGenreRemoteDataSource(impl: GenreRemoteDataSourceImpl): GenreRemoteDataSource
 }
