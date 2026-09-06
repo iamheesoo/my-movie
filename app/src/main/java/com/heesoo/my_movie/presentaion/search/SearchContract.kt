@@ -11,7 +11,7 @@ class SearchContract {
     data class State(
         val textFieldValue: TextFieldValue,
         val genreList: List<Genre>,
-        val selectedGenreId: Int?
+        val selectedGenreId: Int
     ) : UiState
 
     sealed interface Event : UiEvent {

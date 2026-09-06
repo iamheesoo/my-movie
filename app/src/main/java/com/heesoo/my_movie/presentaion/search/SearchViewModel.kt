@@ -39,7 +39,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private val queryFlow = MutableStateFlow("")
-    private val selectedGenreIdFlow = MutableStateFlow<Int?>(null)
+    private val selectedGenreIdFlow = MutableStateFlow(ALL_GENRE_ID)
 
     val searchPagingFlow: Flow<PagingData<Movie>> = queryFlow
         .debounce(DEBOUNCE_MILLIS)
@@ -52,7 +52,7 @@ class SearchViewModel @Inject constructor(
             pagingData.map { movie -> movie.copy(isFavorite = movie.id in favoriteIdSet) }
         }
         .combine(selectedGenreIdFlow) { pagingData, selectedGenreId ->
-            if (selectedGenreId == null) {
+            if (selectedGenreId == ALL_GENRE_ID) {
                 pagingData
             } else {
                 pagingData.filter { movie -> selectedGenreId in movie.genreIdList }
@@ -62,7 +62,7 @@ class SearchViewModel @Inject constructor(
     override fun createState(): SearchContract.State = SearchContract.State(
         textFieldValue = TextFieldValue(""),
         genreList = emptyList(),
-        selectedGenreId = null,
+        selectedGenreId = ALL_GENRE_ID,
     )
 
     override fun handleEvent(event: SearchContract.Event) {
@@ -108,7 +108,7 @@ class SearchViewModel @Inject constructor(
 
     private fun loadGenreList() {
         viewModelScope.launch {
-            val genreList = getGenreListUseCase()
+            val genreList = listOf(ALL_GENRE) + getGenreListUseCase()
             updateGenreList(genreList)
         }
     }
@@ -124,9 +124,8 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun handleGenreFilter(genre: Genre) {
-        val newSelectedGenreId = if (selectedGenreIdFlow.value == genre.id) null else genre.id
-        selectedGenreIdFlow.value = newSelectedGenreId
-        updateSelectedGenreId(newSelectedGenreId)
+        selectedGenreIdFlow.value = genre.id
+        updateSelectedGenreId(genre.id)
     }
 
     private fun goToDetail(movie: Movie) {
@@ -149,11 +148,13 @@ class SearchViewModel @Inject constructor(
         setState { copy(textFieldValue = value) }
     }
 
-    private fun updateSelectedGenreId(id: Int?) {
+    private fun updateSelectedGenreId(id: Int) {
         setState { copy(selectedGenreId = id) }
     }
 
     companion object {
         private const val DEBOUNCE_MILLIS = 300L
+        private const val ALL_GENRE_ID = -1
+        private val ALL_GENRE = Genre(id = ALL_GENRE_ID, name = "전체")
     }
 }
