@@ -11,4 +11,7 @@ sealed interface Route {
 
     @Serializable
     data object Search: Route
+
+    @Serializable
+    data object Favorite: Route
 }
