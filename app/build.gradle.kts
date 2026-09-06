@@ -88,4 +88,8 @@ dependencies {
 
     implementation(libs.navigation.compose)
 
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
 }
