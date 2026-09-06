@@ -19,6 +19,9 @@ class FavoriteRepositoryImpl @Inject constructor(
     override fun isFavorite(movieId: Int): Flow<Boolean> =
         favoriteMovieDao.isFavorite(movieId = movieId)
 
+    override fun getFavoriteIdSet(): Flow<Set<Int>> =
+        favoriteMovieDao.getFavoriteIdList().map { it.toSet() }
+
     override suspend fun addFavorite(movie: Movie) {
         favoriteMovieDao.insert(entity = FavoriteMapper.dataToEntity(movie = movie))
     }

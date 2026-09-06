@@ -22,10 +22,18 @@ class FavoriteViewModel @Inject constructor(
 
     override fun handleEvent(event: FavoriteContract.Event) {
         when (event) {
+            is FavoriteContract.Event.ClickMovie -> {
+                goToDetail(movie = event.movie)
+            }
+
             is FavoriteContract.Event.ClickDeleteFavorite -> {
                 deleteFavorite(movie = event.movie)
             }
         }
+    }
+
+    private fun goToDetail(movie: Movie) {
+        sendEffect { FavoriteContract.Effect.GoToDetail(movie = movie) }
     }
 
     private fun deleteFavorite(movie: Movie) {

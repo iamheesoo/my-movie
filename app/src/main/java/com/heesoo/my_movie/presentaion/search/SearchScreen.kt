@@ -70,7 +70,8 @@ fun SearchScreen(viewModel: SearchViewModel, listener: SearchListener) {
                         if (movie != null) {
                             SearchMovieItem(
                                 movie = movie,
-                                onClick = { viewModel.sendEvent(SearchContract.Event.ClickMovie(movie = movie)) }
+                                onClick = { viewModel.sendEvent(SearchContract.Event.ClickMovie(movie = movie)) },
+                                onClickFavorite = { viewModel.sendEvent(SearchContract.Event.ClickFavorite(movie = movie)) }
                             )
                         }
                     }

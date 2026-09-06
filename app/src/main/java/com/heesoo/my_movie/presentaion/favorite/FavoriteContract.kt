@@ -9,8 +9,11 @@ class FavoriteContract {
     data object State : UiState
 
     sealed interface Event : UiEvent {
+        data class ClickMovie(val movie: Movie) : Event
         data class ClickDeleteFavorite(val movie: Movie) : Event
     }
 
-    sealed interface Effect : UiEffect
+    sealed interface Effect : UiEffect {
+        data class GoToDetail(val movie: Movie) : Effect
+    }
 }

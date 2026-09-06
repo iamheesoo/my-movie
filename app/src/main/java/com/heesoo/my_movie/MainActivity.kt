@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.presentaion.DetailListener
+import com.heesoo.my_movie.presentaion.FavoriteListener
 import com.heesoo.my_movie.presentaion.HomeListener
 import com.heesoo.my_movie.presentaion.detail.DetailScreen
 import com.heesoo.my_movie.presentaion.favorite.FavoriteScreen
@@ -107,7 +108,14 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
             )
         }
         composable<Route.Favorite> {
-            FavoriteScreen(viewModel = hiltViewModel())
+            FavoriteScreen(
+                viewModel = hiltViewModel(),
+                listener = object : FavoriteListener {
+                    override fun goToDetail(movie: Movie) {
+                        navController.navigate(Route.Detail(movieId = movie.id))
+                    }
+                }
+            )
         }
     }
 }

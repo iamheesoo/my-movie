@@ -1,4 +1,4 @@
-package com.heesoo.my_movie.presentaion.search.composable
+package com.heesoo.my_movie.presentaion.favorite.composable
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,11 +21,11 @@ import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.presentaion.ui.composable.image.LoadingAsyncImage
 
 @Composable
-fun SearchMovieItem(
+fun FavoriteMovieItem(
     modifier: Modifier = Modifier,
     movie: Movie,
     onClick: () -> Unit,
-    onClickFavorite: () -> Unit,
+    onClickDelete: () -> Unit,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         LoadingAsyncImage(
@@ -38,16 +37,16 @@ fun SearchMovieItem(
                 .clickable(onClick = onClick)
         )
         IconButton(
-            onClick = onClickFavorite,
+            onClick = onClickDelete,
             modifier = Modifier
                 .padding(4.dp)
                 .align(Alignment.BottomEnd)
                 .size(24.dp)
         ) {
             Icon(
-                imageVector = if (movie.isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                imageVector = Icons.Rounded.Favorite,
                 contentDescription = null,
-                tint = if (movie.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }
