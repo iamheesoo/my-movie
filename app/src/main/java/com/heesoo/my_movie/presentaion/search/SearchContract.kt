@@ -15,6 +15,7 @@ class SearchContract {
         data class UpdateQuery(val textFieldValue: TextFieldValue) : Event
         data class Search(val query: String) : Event
         data class ClickMovie(val movie: Movie) : Event
+        data class ClickFavorite(val movie: Movie) : Event
         data object ClickDelete : Event
         data object ClickBackButton : Event
     }
