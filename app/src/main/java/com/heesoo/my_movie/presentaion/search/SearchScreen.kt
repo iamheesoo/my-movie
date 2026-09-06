@@ -58,6 +58,8 @@ fun SearchScreen(viewModel: SearchViewModel, listener: SearchListener) {
 
         GenreChipsRow(
             genreList = state.genreList,
+            selectedGenreId = state.selectedGenreId,
+            onClickGenre = { viewModel.sendEvent(SearchContract.Event.ClickGenre(genre = it)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)

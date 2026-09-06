@@ -10,7 +10,8 @@ import com.heesoo.my_movie.domain.model.Movie
 class SearchContract {
     data class State(
         val textFieldValue: TextFieldValue,
-        val genreList: List<Genre>
+        val genreList: List<Genre>,
+        val selectedGenreId: Int?
     ) : UiState
 
     sealed interface Event : UiEvent {
@@ -18,6 +19,7 @@ class SearchContract {
         data class Search(val query: String) : Event
         data class ClickMovie(val movie: Movie) : Event
         data class ClickFavorite(val movie: Movie) : Event
+        data class ClickGenre(val genre: Genre) : Event
         data object ClickDelete : Event
         data object ClickBackButton : Event
     }

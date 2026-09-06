@@ -4,6 +4,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.filter
 import androidx.paging.map
 import com.heesoo.core.base.BaseMviViewModel
 import com.heesoo.my_movie.domain.model.Genre
@@ -38,6 +39,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private val queryFlow = MutableStateFlow("")
+    private val selectedGenreIdFlow = MutableStateFlow<Int?>(null)
 
     val searchPagingFlow: Flow<PagingData<Movie>> = queryFlow
         .debounce(DEBOUNCE_MILLIS)
@@ -49,10 +51,18 @@ class SearchViewModel @Inject constructor(
         .combine(getFavoriteIdSetUseCase()) { pagingData, favoriteIdSet ->
             pagingData.map { movie -> movie.copy(isFavorite = movie.id in favoriteIdSet) }
         }
+        .combine(selectedGenreIdFlow) { pagingData, selectedGenreId ->
+            if (selectedGenreId == null) {
+                pagingData
+            } else {
+                pagingData.filter { movie -> selectedGenreId in movie.genreIdList }
+            }
+        }
 
     override fun createState(): SearchContract.State = SearchContract.State(
         textFieldValue = TextFieldValue(""),
-        genreList = emptyList()
+        genreList = emptyList(),
+        selectedGenreId = null,
     )
 
     override fun handleEvent(event: SearchContract.Event) {
@@ -70,7 +80,11 @@ class SearchViewModel @Inject constructor(
             }
 
             is SearchContract.Event.ClickFavorite -> {
-                toggleFavorite(movie = event.movie)
+                handleFavorite(movie = event.movie)
+            }
+
+            is SearchContract.Event.ClickGenre -> {
+                handleGenreFilter(genre = event.genre)
             }
 
             is SearchContract.Event.ClickDelete -> {
@@ -99,7 +113,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun toggleFavorite(movie: Movie) {
+    private fun handleFavorite(movie: Movie) {
         viewModelScope.launch {
             if (movie.isFavorite) {
                 deleteFavoriteUseCase(movieId = movie.id)
@@ -107,6 +121,12 @@ class SearchViewModel @Inject constructor(
                 addFavoriteUseCase(movie = movie)
             }
         }
+    }
+
+    private fun handleGenreFilter(genre: Genre) {
+        val newSelectedGenreId = if (selectedGenreIdFlow.value == genre.id) null else genre.id
+        selectedGenreIdFlow.value = newSelectedGenreId
+        updateSelectedGenreId(newSelectedGenreId)
     }
 
     private fun goToDetail(movie: Movie) {
@@ -127,6 +147,10 @@ class SearchViewModel @Inject constructor(
 
     private fun updateTextFieldValue(value: TextFieldValue) {
         setState { copy(textFieldValue = value) }
+    }
+
+    private fun updateSelectedGenreId(id: Int?) {
+        setState { copy(selectedGenreId = id) }
     }
 
     companion object {
