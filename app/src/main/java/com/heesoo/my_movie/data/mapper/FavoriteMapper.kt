@@ -25,6 +25,7 @@ object FavoriteMapper {
             voteAverage = entity.voteAverage,
             voteCount = 0,
             popularity = 0.0,
-            genreIdList = emptyList()
+            genreIdList = emptyList(),
+            isFavorite = true
         )
 }

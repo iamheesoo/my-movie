@@ -1,4 +1,4 @@
-package com.heesoo.my_movie.presentaion.search.composable
+package com.heesoo.my_movie.presentaion.ui.composable.movie
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,7 @@ import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.presentaion.ui.composable.image.LoadingAsyncImage
 
 @Composable
-fun SearchMovieItem(
+fun MovieGridItem(
     modifier: Modifier = Modifier,
     movie: Movie,
     onClick: () -> Unit,
@@ -47,7 +47,7 @@ fun SearchMovieItem(
             Icon(
                 imageVector = if (movie.isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
                 contentDescription = null,
-                tint = if (movie.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                tint = MaterialTheme.colorScheme.primary,
             )
         }
     }

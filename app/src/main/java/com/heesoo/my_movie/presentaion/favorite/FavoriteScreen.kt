@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.heesoo.my_movie.presentaion.FavoriteListener
-import com.heesoo.my_movie.presentaion.favorite.composable.FavoriteMovieItem
+import com.heesoo.my_movie.presentaion.ui.composable.movie.MovieGridItem
 
 @Composable
 fun FavoriteScreen(viewModel: FavoriteViewModel, listener: FavoriteListener) {
@@ -42,10 +42,10 @@ fun FavoriteScreen(viewModel: FavoriteViewModel, listener: FavoriteListener) {
             ) {
                 items(count = movieList.size) { index ->
                     val movie = movieList[index]
-                    FavoriteMovieItem(
+                    MovieGridItem(
                         movie = movie,
                         onClick = { viewModel.sendEvent(FavoriteContract.Event.ClickMovie(movie = movie)) },
-                        onClickDelete = { viewModel.sendEvent(FavoriteContract.Event.ClickDeleteFavorite(movie = movie)) }
+                        onClickFavorite = { viewModel.sendEvent(FavoriteContract.Event.ClickDeleteFavorite(movie = movie)) }
                     )
                 }
             }

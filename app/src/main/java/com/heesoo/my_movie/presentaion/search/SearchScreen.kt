@@ -28,7 +28,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.heesoo.my_movie.presentaion.SearchListener
 import com.heesoo.my_movie.presentaion.home.composable.RetryContent
-import com.heesoo.my_movie.presentaion.search.composable.SearchMovieItem
+import com.heesoo.my_movie.presentaion.ui.composable.movie.MovieGridItem
 import com.heesoo.my_movie.presentaion.ui.composable.textfield.SearchTextField
 
 @Composable
@@ -68,7 +68,7 @@ fun SearchScreen(viewModel: SearchViewModel, listener: SearchListener) {
                     items(count = movieLazyItems.itemCount) { index ->
                         val movie = movieLazyItems[index]
                         if (movie != null) {
-                            SearchMovieItem(
+                            MovieGridItem(
                                 movie = movie,
                                 onClick = { viewModel.sendEvent(SearchContract.Event.ClickMovie(movie = movie)) },
                                 onClickFavorite = { viewModel.sendEvent(SearchContract.Event.ClickFavorite(movie = movie)) }
