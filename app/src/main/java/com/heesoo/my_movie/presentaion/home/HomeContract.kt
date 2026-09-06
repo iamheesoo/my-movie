@@ -12,9 +12,11 @@ class HomeContract {
         data class ClickMovie(
             val movie: Movie
         ): Event
+        data object ClickSearch: Event
     }
 
     sealed interface Effect : UiEffect {
         data class GoToDetail(val movie: Movie): Effect
+        data object GoToSearch: Effect
     }
 }

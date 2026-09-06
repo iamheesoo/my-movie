@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getDiscoverUseCase: GetDiscoverUseCase
+    private val getDiscoverUseCase: GetDiscoverUseCase
 ) : BaseMviViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>() {
 
     val moviePagingFlow: Flow<PagingData<Movie>> = getDiscoverUseCase()
@@ -25,10 +25,18 @@ class HomeViewModel @Inject constructor(
             is HomeContract.Event.ClickMovie -> {
                 goToDetail(movie = event.movie)
             }
+
+            is HomeContract.Event.ClickSearch -> {
+                goToSearch()
+            }
         }
     }
 
     private fun goToDetail(movie: Movie) {
         sendEffect { HomeContract.Effect.GoToDetail(movie = movie) }
+    }
+
+    private fun goToSearch() {
+        sendEffect { HomeContract.Effect.GoToSearch }
     }
 }

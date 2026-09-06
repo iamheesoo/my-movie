@@ -4,38 +4,37 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.heesoo.my_movie.data.constants.NetworkingConstants
 import com.heesoo.my_movie.data.mapper.MovieListMapper
-import com.heesoo.my_movie.data.remote.DiscoverRemoteDataSource
+import com.heesoo.my_movie.data.remote.SearchRemoteDataSource
 import com.heesoo.my_movie.domain.model.Movie
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 
-class DiscoverPagingSource(
-    private val discoverRemoteDataSource: DiscoverRemoteDataSource,
+class SearchPagingSource(
+    private val searchRemoteDataSource: SearchRemoteDataSource,
+    private val query: String,
     private val language: String,
-    private val sortBy: String,
-    private val includeAdult: Boolean,
-    private val includeVideo: Boolean
 ) : PagingSource<Int, Movie>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: NetworkingConstants.START_PAGE
-        return try {
-            val response = discoverRemoteDataSource.getDiscover(
-                page = page,
+        return runCatching {
+            searchRemoteDataSource.getSearch(
+                query = query,
                 language = language,
-                sortBy = sortBy,
-                includeAdult = includeAdult,
-                includeVideo = includeVideo
+                page = page
             ).first()
-            LoadResult.Page(
-                data = MovieListMapper.responseToData(response),
-                prevKey = if (page == NetworkingConstants.START_PAGE) null else page - 1,
-                nextKey = if (page >= response.totalPages) null else page + 1
-            )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            LoadResult.Error(e)
-        }
+        }.fold(
+            onSuccess = { response ->
+                LoadResult.Page(
+                    data = MovieListMapper.responseToData(response),
+                    prevKey = if (page == NetworkingConstants.START_PAGE) null else page - 1,
+                    nextKey = if (page >= response.totalPages) null else page + 1
+                )
+            },
+            onFailure = { throwable ->
+                if (throwable is CancellationException) throw throwable
+                LoadResult.Error(throwable)
+            }
+        )
     }
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {

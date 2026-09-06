@@ -5,6 +5,7 @@ import com.heesoo.core.network.HeaderInterceptor
 import com.heesoo.my_movie.BuildConfig
 import com.heesoo.my_movie.data.api.DiscoverApi
 import com.heesoo.my_movie.data.api.MovieApi
+import com.heesoo.my_movie.data.api.SearchApi
 import com.heesoo.my_movie.data.constants.NetworkingConstants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -22,7 +23,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
     private val contentType = "application/json".toMediaType()
     private val TAG = this::class.java.simpleName
 
@@ -64,6 +68,12 @@ object ApiModule {
     @Provides
     fun provideMovieApi(retrofit: Retrofit): MovieApi {
         return retrofit.create(MovieApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSearchApi(retrofit: Retrofit): SearchApi{
+        return retrofit.create(SearchApi::class.java)
     }
 
     @Singleton
