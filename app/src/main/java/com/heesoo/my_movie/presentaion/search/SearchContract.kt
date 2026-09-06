@@ -4,11 +4,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.heesoo.core.base.UiEffect
 import com.heesoo.core.base.UiEvent
 import com.heesoo.core.base.UiState
+import com.heesoo.my_movie.domain.model.Genre
 import com.heesoo.my_movie.domain.model.Movie
 
 class SearchContract {
     data class State(
-        val textFieldValue: TextFieldValue
+        val textFieldValue: TextFieldValue,
+        val genreList: List<Genre>
     ) : UiState
 
     sealed interface Event : UiEvent {

@@ -1,4 +1,4 @@
-package com.heesoo.my_movie.presentaion.detail.composable
+package com.heesoo.my_movie.presentaion.ui.composable.movie
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

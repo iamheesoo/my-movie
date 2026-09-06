@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.heesoo.my_movie.domain.model.MovieDetail
+import com.heesoo.my_movie.presentaion.ui.composable.movie.GenreChipsRow
 
 @Composable
 fun DetailContent(movieDetail: MovieDetail, modifier: Modifier = Modifier) {

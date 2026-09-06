@@ -6,10 +6,12 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.heesoo.core.base.BaseMviViewModel
+import com.heesoo.my_movie.domain.model.Genre
 import com.heesoo.my_movie.domain.model.Movie
 import com.heesoo.my_movie.domain.usecase.AddFavoriteUseCase
 import com.heesoo.my_movie.domain.usecase.DeleteFavoriteUseCase
 import com.heesoo.my_movie.domain.usecase.GetFavoriteIdSetUseCase
+import com.heesoo.my_movie.domain.usecase.GetGenreListUseCase
 import com.heesoo.my_movie.domain.usecase.GetSearchListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -27,8 +29,13 @@ class SearchViewModel @Inject constructor(
     private val getSearchListUseCase: GetSearchListUseCase,
     private val getFavoriteIdSetUseCase: GetFavoriteIdSetUseCase,
     private val addFavoriteUseCase: AddFavoriteUseCase,
-    private val deleteFavoriteUseCase: DeleteFavoriteUseCase
+    private val deleteFavoriteUseCase: DeleteFavoriteUseCase,
+    private val getGenreListUseCase: GetGenreListUseCase
 ) : BaseMviViewModel<SearchContract.State, SearchContract.Event, SearchContract.Effect>() {
+
+    init {
+        loadGenreList()
+    }
 
     private val queryFlow = MutableStateFlow("")
 
@@ -43,8 +50,10 @@ class SearchViewModel @Inject constructor(
             pagingData.map { movie -> movie.copy(isFavorite = movie.id in favoriteIdSet) }
         }
 
-    override fun createState(): SearchContract.State =
-        SearchContract.State(textFieldValue = TextFieldValue(""))
+    override fun createState(): SearchContract.State = SearchContract.State(
+        textFieldValue = TextFieldValue(""),
+        genreList = emptyList()
+    )
 
     override fun handleEvent(event: SearchContract.Event) {
         when (event) {
@@ -83,16 +92,11 @@ class SearchViewModel @Inject constructor(
         queryFlow.value = query
     }
 
-    private fun clearTextFieldValue() {
-        updateTextFieldValue(value = TextFieldValue(""))
-    }
-
-    private fun updateTextFieldValue(value: TextFieldValue) {
-        setState { copy(textFieldValue = value) }
-    }
-
-    private fun goToDetail(movie: Movie) {
-        sendEffect { SearchContract.Effect.GoToDetail(movie = movie) }
+    private fun loadGenreList() {
+        viewModelScope.launch {
+            val genreList = getGenreListUseCase()
+            updateGenreList(genreList)
+        }
     }
 
     private fun toggleFavorite(movie: Movie) {
@@ -105,8 +109,24 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun goToDetail(movie: Movie) {
+        sendEffect { SearchContract.Effect.GoToDetail(movie = movie) }
+    }
+
     private fun popBackStack() {
         sendEffect { SearchContract.Effect.PopBackStack }
+    }
+
+    private fun clearTextFieldValue() {
+        updateTextFieldValue(value = TextFieldValue(""))
+    }
+
+    private fun updateGenreList(list: List<Genre>) {
+        setState { copy(genreList = list) }
+    }
+
+    private fun updateTextFieldValue(value: TextFieldValue) {
+        setState { copy(textFieldValue = value) }
     }
 
     companion object {
