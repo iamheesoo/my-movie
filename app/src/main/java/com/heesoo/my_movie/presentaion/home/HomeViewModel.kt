@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getDiscoverUseCase: GetDiscoverUseCase
+    private val getDiscoverUseCase: GetDiscoverUseCase
 ) : BaseMviViewModel<HomeContract.State, HomeContract.Event, HomeContract.Effect>() {
 
     val moviePagingFlow: Flow<PagingData<Movie>> = getDiscoverUseCase()

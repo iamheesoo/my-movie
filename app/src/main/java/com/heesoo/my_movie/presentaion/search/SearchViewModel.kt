@@ -1,13 +1,35 @@
 package com.heesoo.my_movie.presentaion.search
 
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.heesoo.core.base.BaseMviViewModel
+import com.heesoo.my_movie.domain.model.Movie
+import com.heesoo.my_movie.domain.usecase.GetSearchListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor() :
-    BaseMviViewModel<SearchContract.State, SearchContract.Event, SearchContract.Effect>() {
+class SearchViewModel @Inject constructor(
+    private val getSearchListUseCase: GetSearchListUseCase
+) : BaseMviViewModel<SearchContract.State, SearchContract.Event, SearchContract.Effect>() {
+
+    private val queryFlow = MutableStateFlow("")
+
+    val searchPagingFlow: Flow<PagingData<Movie>> = queryFlow
+        .debounce(DEBOUNCE_MILLIS)
+        .distinctUntilChanged()
+        .flatMapLatest { query ->
+            if (query.isBlank()) flowOf(PagingData.empty()) else getSearchListUseCase(query = query)
+        }
+        .cachedIn(viewModelScope)
 
     override fun createState(): SearchContract.State =
         SearchContract.State(textFieldValue = TextFieldValue(""))
@@ -16,6 +38,14 @@ class SearchViewModel @Inject constructor() :
         when (event) {
             is SearchContract.Event.UpdateQuery -> {
                 handleUpdateQuery(value = event.textFieldValue)
+            }
+
+            is SearchContract.Event.Search -> {
+                handleSearch(query = event.query)
+            }
+
+            is SearchContract.Event.ClickMovie -> {
+                goToDetail(movie = event.movie)
             }
 
             is SearchContract.Event.ClickDelete -> {
@@ -30,6 +60,11 @@ class SearchViewModel @Inject constructor() :
 
     private fun handleUpdateQuery(value: TextFieldValue) {
         updateTextFieldValue(value = value)
+        queryFlow.value = value.text
+    }
+
+    private fun handleSearch(query: String) {
+        queryFlow.value = query
     }
 
     private fun clearTextFieldValue() {
@@ -40,7 +75,15 @@ class SearchViewModel @Inject constructor() :
         setState { copy(textFieldValue = value) }
     }
 
+    private fun goToDetail(movie: Movie) {
+        sendEffect { SearchContract.Effect.GoToDetail(movie = movie) }
+    }
+
     private fun popBackStack() {
         sendEffect { SearchContract.Effect.PopBackStack }
+    }
+
+    companion object {
+        private const val DEBOUNCE_MILLIS = 300L
     }
 }

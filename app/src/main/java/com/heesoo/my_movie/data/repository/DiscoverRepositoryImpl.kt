@@ -3,6 +3,7 @@ package com.heesoo.my_movie.data.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.heesoo.my_movie.data.constants.NetworkingConstants
 import com.heesoo.my_movie.data.paging.DiscoverPagingSource
 import com.heesoo.my_movie.data.remote.DiscoverRemoteDataSource
 import com.heesoo.my_movie.domain.model.Movie
@@ -20,7 +21,7 @@ class DiscoverRepositoryImpl @Inject constructor(
         includeVideo: Boolean
     ): Flow<PagingData<Movie>> =
         Pager(
-            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+            config = PagingConfig(pageSize = NetworkingConstants.PAGE_SIZE, enablePlaceholders = false),
             pagingSourceFactory = {
                 DiscoverPagingSource(
                     discoverRemoteDataSource = discoverRemoteDataSource,
@@ -32,7 +33,4 @@ class DiscoverRepositoryImpl @Inject constructor(
             }
         ).flow
 
-    companion object {
-        private const val PAGE_SIZE = 20
-    }
 }

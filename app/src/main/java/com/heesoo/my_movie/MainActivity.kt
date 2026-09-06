@@ -77,6 +77,10 @@ private fun MainNavHost(navController: NavHostController, modifier: Modifier = M
             SearchScreen(
                 viewModel = hiltViewModel(),
                 listener = object : SearchListener {
+                    override fun goToDetail(movie: Movie) {
+                        navController.navigate(Route.Detail(movieId = movie.id))
+                    }
+
                     override fun popBackStack() {
                         navController.popBackStack()
                     }
